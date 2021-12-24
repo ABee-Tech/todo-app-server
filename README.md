@@ -1,9 +1,9 @@
-# todo-keeping-app Description
+## Todo App Server
 
 The project is node js server app on JavaScript language. I am trying here to make better todo api with some additional features.
 Features may include categorization of todo tasks and so on.
 
-# Tools used:
+### Tools used:
 
 ---
 
