@@ -13,5 +13,4 @@ Features may include categorization of todo tasks and so on.
 - [x] [jwt](https://jwt.io/)
 - [x] [dotenv](https://www.npmjs.com/package/dotenv)
 - [x] [express-async-handler](https://www.npmjs.com/package/express-async-handler)
-- [x] [concurrently](https://www.npmjs.com/package/concurrently)
 - [x] [nodemon](https://www.npmjs.com/package/nodemon)
