@@ -1,17 +1,14 @@
-# todo-keeping-app Description
+## Todo App Server
 
 The project is node js server app on JavaScript language. I am trying here to make better todo api with some additional features.
 Features may include categorization of todo tasks and so on.
 
-# Tools used:
+### Tools used:
 
----
-
-- [x] [Express JS](https://expressjs.com/en/starter/installing.html)
-- [x] [Mongoose](https://mongoosejs.com/)
-- [x] [bcryptjs](https://www.npmjs.com/package/bcryptjs)
-- [x] [jwt](https://jwt.io/)
-- [x] [dotenv](https://www.npmjs.com/package/dotenv)
-- [x] [express-async-handler](https://www.npmjs.com/package/express-async-handler)
-- [x] [concurrently](https://www.npmjs.com/package/concurrently)
-- [x] [nodemon](https://www.npmjs.com/package/nodemon)
+1) Express JS
+2) Mongoose
+3) bcryptjs
+4) JWT
+5) dotenv
+6) express-async-handler
+7) nodemon
