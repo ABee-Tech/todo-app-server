@@ -1,5 +1,5 @@
 const express = require("express");
-const asynchHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler");
 const authMiddlware = require("../middlewares/authMiddleware");
 const permit = require("../middlewares/permit");
 const Todo = require("../models/Todo");
@@ -8,7 +8,7 @@ const todoRouter = express.Router();
 //Create Todo
 todoRouter.post(
   "/",
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const todo = await Todo.create(req.body);
       res.status(200);
@@ -23,7 +23,7 @@ todoRouter.post(
 todoRouter.get(
   "/",
   authMiddlware,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     let todos;
     if (req.user.role !== "admin") {
       todos = await Todo.find({ createdBy: req.user._id }).sort("createdAt");
@@ -47,7 +47,7 @@ todoRouter.delete(
   "/:id",
   authMiddlware,
   permit,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const todo = await Todo.findByIdAndDelete(req.params.id);
       res.status(200);
@@ -65,7 +65,7 @@ todoRouter.put(
   "/:id",
   authMiddlware,
   permit,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       await Todo.findByIdAndUpdate(req.params.id, req.body);
       const todo = await Todo.findById(req.params.id);
@@ -83,7 +83,7 @@ todoRouter.get(
   "/:id",
   authMiddlware,
   permit,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const data = await Todo.findById(req.params.id);
       return res.status(200).json(data);
