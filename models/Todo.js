@@ -20,6 +20,11 @@ const TodoSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: false,
+    },
   },
   { timestamps: true }
 );
