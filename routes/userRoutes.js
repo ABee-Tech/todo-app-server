@@ -1,5 +1,5 @@
 const express = require("express");
-const asynchHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler");
 const authMiddlware = require("../middlewares/authMiddleware");
 const User = require("../models/User");
 const authTokenGenerator = require("../utils/authTokenGenerator");
@@ -8,7 +8,7 @@ const userRouter = express.Router();
 //Create user
 userRouter.post(
   "/",
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { name, email, password, role } = req.body;
     const userExist = await User.findOne({ email: email });
 
@@ -31,7 +31,7 @@ userRouter.post(
 
 userRouter.post(
   "/login",
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     //Compare password
@@ -58,7 +58,7 @@ userRouter.post(
 userRouter.get(
   "/profile",
   authMiddlware,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const user = await User.findById(req.user.id).populate("todos");
       res.status(404);
@@ -77,7 +77,7 @@ userRouter.get(
 userRouter.put(
   "/profile/update",
   authMiddlware,
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     const user = await User.findById(req.user.id);
     if (user) {
       user.name = req.body.name || user.name;
@@ -105,7 +105,7 @@ userRouter.put(
 
 userRouter.get(
   "/",
-  asynchHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
     try {
       const users = await User.find().populate("todos");
       res.status(200);
