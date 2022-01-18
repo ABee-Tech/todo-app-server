@@ -1,8 +1,8 @@
-const asynchHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const authMiddlware = asynchHandler(async (req, res, next) => {
+const authMiddlware = asyncHandler(async (req, res, next) => {
   let token;
   if (
     req.headers.authorization &&
