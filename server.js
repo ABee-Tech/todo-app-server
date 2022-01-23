@@ -1,18 +1,20 @@
 require("dotenv").config();
 const path = require("path");
 const express = require("express");
-const routes = require("./routes/userRoutes");
 const cors = require("cors");
 const error = require("./middlewares/errorMiddleware");
+const userRouter = require("./routes/userRoutes");
 const todoRouter = require("./routes/todoRoutes");
+const todoCategoryRouter = require("./routes/todoCategoryRoutes");
 require("./config/dbConnect")();
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/users", routes.userRouter);
-app.use("/api/todos", todoRouter.todoRouter);
+app.use("/api/users", userRouter);
+app.use("/api/todos", todoRouter);
+app.use("/api/todo_categories", todoCategoryRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running....");

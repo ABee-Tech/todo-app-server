@@ -114,4 +114,4 @@ userRouter.get(
   })
 );
 
-module.exports = { userRouter };
+module.exports = userRouter;

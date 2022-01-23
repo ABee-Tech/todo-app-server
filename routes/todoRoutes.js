@@ -8,9 +8,10 @@ const todoRouter = express.Router();
 //Create Todo
 todoRouter.post(
   "/",
+  authMiddlware,
   asyncHandler(async (req, res) => {
     try {
-      const todo = await Todo.create(req.body);
+      const todo = await Todo.create({ ...req.body, createdBy: req.user._id });
       res.status(200);
       res.json(todo);
     } catch (error) {
@@ -59,8 +60,25 @@ todoRouter.delete(
   })
 );
 
-//Update
+// Mark complete or incomplete Todo
+todoRouter.put(
+  "/:id/completed",
+  authMiddlware,
+  permit,
+  asyncHandler(async (req, res) => {
+    try {
+      await Todo.findByIdAndUpdate(req.params.id, req.body);
+      const todo = await Todo.findById(req.params.id);
+      res.status(200);
+      res.json(todo);
+    } catch (error) {
+      res.status(500);
+      throw new Error("Update failed");
+    }
+  })
+);
 
+// Update Todo
 todoRouter.put(
   "/:id",
   authMiddlware,
@@ -94,4 +112,4 @@ todoRouter.get(
   })
 );
 
-module.exports = { todoRouter };
+module.exports = todoRouter;

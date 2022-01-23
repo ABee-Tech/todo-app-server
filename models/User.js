@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-//Popuplating this field of todos to user s
+//Popuplating this field of todos to users
 UserSchema.virtual("todos", {
   ref: "Todo",
   foreignField: "createdBy",
