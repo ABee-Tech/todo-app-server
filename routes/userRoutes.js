@@ -4,6 +4,7 @@ const authMiddlware = require("../middlewares/authMiddleware");
 const User = require("../models/User");
 const authTokenGenerator = require("../utils/authTokenGenerator");
 const userRouter = express.Router();
+const { ApiError } = require("../handlers/buildError");
 
 //Create user
 userRouter.post(
@@ -13,8 +14,9 @@ userRouter.post(
     const userExist = await User.findOne({ email: email });
 
     if (userExist) {
-      throw new Error("User Exist");
+      throw ApiError.conflict("User already exists");
     }
+
     const user = await User.create({ name, email, password, role });
     if (user) {
       res.status(200);
@@ -48,7 +50,7 @@ userRouter.post(
       });
     } else {
       res.status(401);
-      throw new Error("Invalid login credentials");
+      throw ApiError.unauthorized("Unauthorized");
     }
   })
 );
@@ -59,16 +61,11 @@ userRouter.get(
   "/profile",
   authMiddlware,
   asyncHandler(async (req, res) => {
-    try {
-      const user = await User.findById(req.user.id).populate("todos");
-      res.status(404);
-      if (!user) throw new Error(`You don't have any profile yet`);
-      res.status(201);
-      res.send(user);
-    } catch (error) {
-      res.status(500);
-      throw new Error("Server error");
-    }
+    const user = await User.findById(req.user.id).populate("todos");
+    res.status(404);
+    if (!user) throw ApiError.notFound(`You don't have any profile yet`);
+    res.status(201);
+    res.send(user);
   })
 );
 
@@ -96,7 +93,7 @@ userRouter.put(
       });
     } else {
       res.status(401);
-      throw new Error("User Not found");
+      throw ApiError.notFound("User Not found");
     }
   })
 );
@@ -106,11 +103,9 @@ userRouter.put(
 userRouter.get(
   "/",
   asyncHandler(async (req, res) => {
-    try {
-      const users = await User.find().populate("todos");
-      res.status(200);
-      res.json(users);
-    } catch (error) {}
+    const users = await User.find().populate("todos");
+    res.status(200);
+    res.json(users);
   })
 );
 

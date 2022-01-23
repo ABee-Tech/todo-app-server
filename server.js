@@ -8,9 +8,12 @@ const todoRouter = require("./routes/todoRoutes");
 const todoCategoryRouter = require("./routes/todoCategoryRoutes");
 require("./config/dbConnect")();
 const app = express();
+const morgan = require("morgan");
+const apiErrorHandler = require("./handlers/handleError");
 
 app.use(express.json());
 app.use(cors());
+app.use(morgan("dev"));
 
 app.use("/api/users", userRouter);
 app.use("/api/todos", todoRouter);
@@ -20,9 +23,18 @@ app.get("/", (req, res) => {
   res.send("API is running....");
 });
 
-//====Catch Error
-app.use(error.notfoundErrorMiddleware);
-app.use(error.errorMiddlewareHandler);
+app.use((req, res, next) => {
+  const error = new Error("Not found");
+  error.code = 404;
+  next(error);
+});
+
+app.use(apiErrorHandler);
+
+process.on("uncaughtException", function (err) {
+  // Handle the error safely
+  console.log(err);
+});
 
 //End of deployment
 const PORT = process.env.PORT || 5000;
