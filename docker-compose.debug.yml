@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  todokeepingapp:
+    image: todokeepingapp
+    build: .
+    environment:
+      NODE_ENV: development
+    ports:
+      - 5555:5555
+      - 9229:9229
+    command: ["node", "--inspect=0.0.0.0:9229", "server.js"]
