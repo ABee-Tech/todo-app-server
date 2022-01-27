@@ -3,9 +3,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const error = require("./middlewares/errorMiddleware");
-const userRouter = require("./routes/userRoutes");
-const todoRouter = require("./routes/todoRoutes");
-const todoCategoryRouter = require("./routes/todoCategoryRoutes");
+const apiRouter = require("./routes");
 require("./config/dbConnect")();
 const app = express();
 const morgan = require("morgan");
@@ -15,9 +13,16 @@ app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
 
-app.use("/api/users", userRouter);
-app.use("/api/todos", todoRouter);
-app.use("/api/todo_categories", todoCategoryRouter);
+app.use(
+  "/",
+  (req, res, next) => {
+    console.log("=====================");
+    console.log("req.body:", req.body);
+    console.log("req.query:", req.query);
+    next();
+  },
+  apiRouter
+);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
