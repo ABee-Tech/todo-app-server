@@ -1,18 +1,17 @@
 const winston = require("winston");
 
-const logFolder =
-  __dirname + "/../" + process.env.LOG_FOLDER_NAME || "logs" + "/";
+const logFolder = __dirname + "/../logs";
 
 const Logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),
   transports: [
     new winston.transports.File({
-      filename: logFolder + "error.log",
+      filename: logFolder + "/error.log",
       level: "error",
     }),
     new winston.transports.File({
-      filename: logFolder + "combined.log",
+      filename: logFolder + "/combined.log",
     }),
   ],
 });
