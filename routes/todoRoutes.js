@@ -31,7 +31,6 @@ todoRouter.get(
     } else {
       todos = await Todo.find().sort("createdAt").populate("createdBy");
     }
-    //Compare password
     if (todos) {
       res.status(201);
       res.send(todos);
