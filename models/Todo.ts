@@ -26,7 +26,7 @@ const TodoSchema = new mongoose.Schema<ITodo>(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "TodoCategory",
       required: false,
     },
   },

@@ -15,7 +15,9 @@ todoCategoryRouter.post(
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     try {
       const todoCategory = await TodoCategory.create({
-        ...req.body,
+        name: req.body.name,
+        color: req.body.color,
+        progress: 0,
         createdBy: req.user._id,
       });
       res.status(200);
@@ -39,7 +41,7 @@ todoCategoryRouter.get(
       res.status(201);
       res.send(todoCategories);
     } else {
-      res.status(401);
+      res.status(500);
       throw new Error("Server error");
     }
   })
@@ -50,9 +52,10 @@ todoCategoryRouter.delete(
   "/:id",
   authMiddleware,
   permit,
-  asyncHandler(async (req, res): Promise<any> => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     try {
-      const todoCategory = await TodoCategory.findByIdAndDelete(req.params.id);
+      const filter = { _id: req.params.id, createdBy: req.user._id };
+      const todoCategory = await TodoCategory.findOneAndDelete(filter);
       res.status(200);
       res.send(todoCategory);
     } catch (error) {
@@ -67,15 +70,19 @@ todoCategoryRouter.put(
   "/:id",
   authMiddleware,
   permit,
-  asyncHandler(async (req, res): Promise<any> => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     try {
-      await TodoCategory.findByIdAndUpdate(req.params.id, req.body);
-      const todoCategory = await TodoCategory.findById(req.params.id);
+      const filter = { _id: req.params.id, createdBy: req.user._id };
+      await TodoCategory.findOneAndUpdate(filter, {
+        name: req.body.name,
+        color: req.body.color,
+      });
+      const todoCategory = await TodoCategory.findOne(filter);
       res.status(200);
       res.json(todoCategory);
     } catch (error) {
       res.status(500);
-      throw new Error("Update failed");
+      throw new Error("Server Error");
     }
   })
 );
@@ -85,13 +92,14 @@ todoCategoryRouter.get(
   "/:id",
   authMiddleware,
   permit,
-  asyncHandler(async (req, res): Promise<any> => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     try {
-      const data = await TodoCategory.findById(req.params.id);
+      const filter = { _id: req.params.id, createdBy: req.user._id };
+      const data = await TodoCategory.findOne(filter);
       return res.status(200).json(data);
     } catch (error) {
       res.status(500);
-      throw new Error("No todo category found");
+      throw new Error("Server Error");
     }
   })
 );
