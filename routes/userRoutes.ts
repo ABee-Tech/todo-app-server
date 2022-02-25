@@ -106,10 +106,14 @@ userRouter.put(
 
 userRouter.get(
   "/",
-  asyncHandler(async (_req, res) => {
-    const users = await User.find().populate("todos");
-    res.status(200);
-    res.json(users);
+  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+    if (req.user.role !== "admin") {
+      const users = await User.find().populate("todos");
+      res.status(200);
+      res.json(users);
+    } else {
+      throw ApiError.unauthorized("You are not authorized to view this page");
+    }
   })
 );
 
