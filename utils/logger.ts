@@ -1,4 +1,4 @@
-const winston = require("winston");
+import winston from "winston";
 
 const logFolder = __dirname + "/../logs";
 
@@ -24,4 +24,4 @@ if (process.env.NODE_ENV !== "production") {
   );
 }
 
-module.exports = Logger;
+export default Logger;

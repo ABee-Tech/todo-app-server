@@ -1,15 +1,18 @@
-const express = require("express");
-const asyncHandler = require("express-async-handler");
-const authMiddlware = require("../middlewares/authMiddleware");
-const permit = require("../middlewares/permit");
-const TodoCategory = require("../models/TodoCategory");
+import express from "express";
 const todoCategoryRouter = express.Router();
+import asyncHandler from "express-async-handler";
+import {
+  authMiddleware,
+  IUserAuthInfoRequest,
+} from "../middlewares/authMiddleware";
+import permit from "../middlewares/permit";
+import TodoCategory from "../models/TodoCategory";
 
 //Create Todo Category
 todoCategoryRouter.post(
   "/",
-  authMiddlware,
-  asyncHandler(async (req, res) => {
+  authMiddleware,
+  asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     try {
       const todoCategory = await TodoCategory.create({
         ...req.body,
@@ -27,12 +30,11 @@ todoCategoryRouter.post(
 // Get all Todo Categories
 todoCategoryRouter.get(
   "/",
-  authMiddlware,
-  asyncHandler(async (req, res) => {
-    let todoCategories;
-    todoCategories = await TodoCategory.find({ createdBy: req.user._id }).sort(
-      "createdAt"
-    );
+  authMiddleware,
+  asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
+    const todoCategories = await TodoCategory.find({
+      createdBy: req.user._id,
+    }).sort("createdAt");
     if (todoCategories) {
       res.status(201);
       res.send(todoCategories);
@@ -46,9 +48,9 @@ todoCategoryRouter.get(
 // Delete todo category
 todoCategoryRouter.delete(
   "/:id",
-  authMiddlware,
+  authMiddleware,
   permit,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res): Promise<any> => {
     try {
       const todoCategory = await TodoCategory.findByIdAndDelete(req.params.id);
       res.status(200);
@@ -63,9 +65,9 @@ todoCategoryRouter.delete(
 // Update a todo category
 todoCategoryRouter.put(
   "/:id",
-  authMiddlware,
+  authMiddleware,
   permit,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res): Promise<any> => {
     try {
       await TodoCategory.findByIdAndUpdate(req.params.id, req.body);
       const todoCategory = await TodoCategory.findById(req.params.id);
@@ -81,9 +83,9 @@ todoCategoryRouter.put(
 // Find a todo category
 todoCategoryRouter.get(
   "/:id",
-  authMiddlware,
+  authMiddleware,
   permit,
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req, res): Promise<any> => {
     try {
       const data = await TodoCategory.findById(req.params.id);
       return res.status(200).json(data);
@@ -94,4 +96,4 @@ todoCategoryRouter.get(
   })
 );
 
-module.exports = todoCategoryRouter;
+export default todoCategoryRouter;

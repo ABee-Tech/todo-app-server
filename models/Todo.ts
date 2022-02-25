@@ -1,6 +1,14 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const TodoSchema = new mongoose.Schema(
+interface ITodo {
+  _id: string;
+  title: string;
+  completed: boolean;
+  createdBy: string;
+  category: string;
+}
+
+const TodoSchema = new mongoose.Schema<ITodo>(
   {
     title: {
       type: String,
@@ -25,6 +33,6 @@ const TodoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Todo = mongoose.model("Todo", TodoSchema);
+const Todo = mongoose.model<ITodo>("Todo", TodoSchema);
 
-module.exports = Todo;
+export default Todo;
