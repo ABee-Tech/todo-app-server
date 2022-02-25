@@ -1,10 +1,14 @@
-const express = require("express");
-const asyncHandler = require("express-async-handler");
-const authMiddlware = require("../middlewares/authMiddleware");
-const User = require("../models/User");
-const authTokenGenerator = require("../utils/authTokenGenerator");
+import express from "express";
+import asyncHandler from "express-async-handler";
+import {
+  authMiddleware,
+  IUserAuthInfoRequest,
+} from "../middlewares/authMiddleware";
+import User from "../models/User";
+import authTokenGenerator from "../utils/authTokenGenerator";
+import { ApiError } from "../handlers/buildError";
+
 const userRouter = express.Router();
-const { ApiError } = require("../handlers/buildError");
 
 //Create user
 userRouter.post(
@@ -59,9 +63,9 @@ userRouter.post(
 
 userRouter.get(
   "/profile",
-  authMiddlware,
-  asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id).populate("todos");
+  authMiddleware,
+  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+    const user = await User.findById(req.user._id).populate("todos");
     res.status(404);
     if (!user) throw ApiError.notFound(`You don't have any profile yet`);
     res.status(201);
@@ -73,9 +77,9 @@ userRouter.get(
 
 userRouter.put(
   "/profile/update",
-  authMiddlware,
-  asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user.id);
+  authMiddleware,
+  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+    const user = await User.findById(req.user._id);
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
@@ -102,11 +106,11 @@ userRouter.put(
 
 userRouter.get(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (_req, res) => {
     const users = await User.find().populate("todos");
     res.status(200);
     res.json(users);
   })
 );
 
-module.exports = userRouter;
+export default userRouter;
