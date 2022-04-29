@@ -7,6 +7,7 @@ import {
 import User from "../models/User";
 import authTokenGenerator from "../utils/authTokenGenerator";
 import { ApiError } from "../handlers/buildError";
+import TodoCategory from "../models/TodoCategory";
 
 const userRouter = express.Router();
 
@@ -14,6 +15,8 @@ const userRouter = express.Router();
 userRouter.post(
   "/",
   asyncHandler(async (req, res) => {
+    const session = await User.startSession();
+    session.startTransaction();
     const { name, email, password, role } = req.body;
     const userExist = await User.findOne({ email: email });
 
@@ -21,15 +24,41 @@ userRouter.post(
       throw ApiError.conflict("User already exists");
     }
 
-    const user = await User.create({ name, email, password, role });
+    const user = await User.create([{ name, email, password, role }], {
+      session,
+    });
+
+    await TodoCategory.create(
+      [
+        {
+          name: "Personal",
+          color: "#6c5ce7",
+          total_count: 0,
+          completed_count: 0,
+          isDefault: true,
+          createdBy: user[0]._id,
+        },
+        {
+          name: "Work",
+          color: "#55efc4",
+          total_count: 0,
+          completed_count: 0,
+          isDefault: true,
+          createdBy: user[0]._id,
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
     if (user) {
       res.status(200);
       res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        password: user.password,
-        token: authTokenGenerator(user._id),
+        _id: user[0]._id,
+        name: user[0].name,
+        email: user[0].email,
+        token: authTokenGenerator(user[0]._id),
       });
     }
   })
@@ -47,7 +76,6 @@ userRouter.post(
       res.json({
         _id: user._id,
         name: user.name,
-        password: user.password,
         ...(user.role === "admin" ? { role: user.role } : {}),
         email: user.email,
         token: authTokenGenerator(user._id),

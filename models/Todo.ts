@@ -22,12 +22,12 @@ const TodoSchema = new mongoose.Schema<ITodo>(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: false,
+      required: true,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TodoCategory",
-      required: false,
+      required: true,
     },
   },
   { timestamps: true }
