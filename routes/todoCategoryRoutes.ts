@@ -1,6 +1,8 @@
 import express from "express";
+import _ from "lodash";
 const todoCategoryRouter = express.Router();
 import asyncHandler from "express-async-handler";
+import { ApiError } from "../handlers/buildError";
 import {
   authMiddleware,
   IUserAuthInfoRequest,
@@ -13,19 +15,15 @@ todoCategoryRouter.post(
   "/",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
-    try {
-      const todoCategory = await TodoCategory.create({
-        name: req.body.name,
-        color: req.body.color,
-        progress: 0,
-        createdBy: req.user._id,
-      });
-      res.status(200);
-      res.json(todoCategory);
-    } catch (error) {
-      res.status(500);
-      throw new Error(error);
-    }
+    const todoCategory = await TodoCategory.create({
+      name: req.body.name,
+      color: req.body.color,
+      total_count: 0,
+      completed_count: 0,
+      createdBy: req.user._id,
+    });
+    res.status(200);
+    res.json(todoCategory);
   })
 );
 
@@ -37,12 +35,10 @@ todoCategoryRouter.get(
     const todoCategories = await TodoCategory.find({
       createdBy: req.user._id,
     }).sort("createdAt");
-    if (todoCategories) {
-      res.status(201);
-      res.send(todoCategories);
+    if (!_.isEmpty(todoCategories)) {
+      res.status(200).send(todoCategories);
     } else {
-      res.status(500);
-      throw new Error("Server error");
+      throw ApiError.notFound("No todo categories found.");
     }
   })
 );
