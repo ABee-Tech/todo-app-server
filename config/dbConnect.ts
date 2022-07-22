@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const dbConnect = () => {
-  mongoose.connect(process.env.MONGO_URI, {
+  mongoose.connect(process.env.MONGO_URI || '', {
     useFindAndModify: false,
     useUnifiedTopology: true,
     useCreateIndex: true,
     useNewUrlParser: true,
   });
-  console.log("DB connected");
+  console.log('DB connected');
 };
 
 export default dbConnect;
