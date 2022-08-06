@@ -1,19 +1,19 @@
-import express from 'express';
-import _ from 'lodash';
+import express from "express";
+import _ from "lodash";
 const todoCategoryRouter = express.Router();
-import asyncHandler from 'express-async-handler';
-import { ApiError } from '../handlers/buildError';
+import asyncHandler from "express-async-handler";
+import { ApiError } from "../handlers/buildError";
 import {
   authMiddleware,
   IUserAuthInfoRequest,
-} from '../middlewares/authMiddleware';
-import permit from '../middlewares/permit';
-import TodoCategory from '../models/TodoCategory';
-import Todo from '../models/Todo';
+} from "../middlewares/authMiddleware";
+import permit from "../middlewares/permit";
+import TodoCategory from "../models/TodoCategory";
+import Todo from "../models/Todo";
 
 //Create Todo Category
 todoCategoryRouter.post(
-  '/',
+  "/",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     const todoCategory = await TodoCategory.create({
@@ -30,23 +30,23 @@ todoCategoryRouter.post(
 
 // Get all Todo Categories
 todoCategoryRouter.get(
-  '/',
+  "/",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
     const todoCategories = await TodoCategory.find({
       createdBy: req.user._id,
-    }).sort('createdAt');
+    }).sort("createdAt");
     if (!_.isEmpty(todoCategories)) {
       res.status(200).send(todoCategories);
     } else {
-      throw ApiError.notFound('No todo categories found.');
+      throw ApiError.notFound("No todo categories found.");
     }
   })
 );
 
 // Delete todo category
 todoCategoryRouter.delete(
-  '/:id',
+  "/:id",
   authMiddleware,
   permit,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
@@ -66,14 +66,14 @@ todoCategoryRouter.delete(
       await session.abortTransaction();
       session.endSession();
       res.status(500);
-      throw new Error('Server Error');
+      throw new Error("Server Error");
     }
   })
 );
 
 // Update a todo category
 todoCategoryRouter.put(
-  '/:id',
+  "/:id",
   authMiddleware,
   permit,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
@@ -88,14 +88,14 @@ todoCategoryRouter.put(
       res.json(todoCategory);
     } catch (error) {
       res.status(500);
-      throw new Error('Server Error');
+      throw new Error("Server Error");
     }
   })
 );
 
 // Find a todo category
 todoCategoryRouter.get(
-  '/:id',
+  "/:id",
   authMiddleware,
   permit,
   asyncHandler(async (req: IUserAuthInfoRequest, res): Promise<any> => {
@@ -105,7 +105,7 @@ todoCategoryRouter.get(
       return res.status(200).json(data);
     } catch (error) {
       res.status(500);
-      throw new Error('Server Error');
+      throw new Error("Server Error");
     }
   })
 );

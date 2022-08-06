@@ -1,19 +1,19 @@
-import express from 'express';
-import asyncHandler from 'express-async-handler';
+import express from "express";
+import asyncHandler from "express-async-handler";
 import {
   authMiddleware,
   IUserAuthInfoRequest,
-} from '../middlewares/authMiddleware';
-import User from '../models/User';
-import authTokenGenerator from '../utils/authTokenGenerator';
-import { ApiError } from '../handlers/buildError';
-import TodoCategory from '../models/TodoCategory';
+} from "../middlewares/authMiddleware";
+import User from "../models/User";
+import authTokenGenerator from "../utils/authTokenGenerator";
+import { ApiError } from "../handlers/buildError";
+import TodoCategory from "../models/TodoCategory";
 
 const userRouter = express.Router();
 
 //Create user
 userRouter.post(
-  '/',
+  "/",
   asyncHandler(async (req, res) => {
     const session = await User.startSession();
     session.startTransaction();
@@ -23,7 +23,7 @@ userRouter.post(
     if (userExist) {
       await session.abortTransaction();
       session.endSession();
-      throw ApiError.conflict('User already exists');
+      throw ApiError.conflict("User already exists");
     }
 
     const user = await User.create([{ name, email, password, role }], {
@@ -33,16 +33,16 @@ userRouter.post(
     await TodoCategory.create(
       [
         {
-          name: 'Personal',
-          color: '#6c5ce7',
+          name: "Personal",
+          color: "#6c5ce7",
           total_count: 0,
           completed_count: 0,
           isDefault: true,
           createdBy: user[0]._id,
         },
         {
-          name: 'Work',
-          color: '#55efc4',
+          name: "Work",
+          color: "#55efc4",
           total_count: 0,
           completed_count: 0,
           isDefault: true,
@@ -67,7 +67,7 @@ userRouter.post(
 );
 
 userRouter.post(
-  '/login',
+  "/login",
   asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
@@ -78,13 +78,13 @@ userRouter.post(
       res.json({
         _id: user._id,
         name: user.name,
-        ...(user.role === 'admin' ? { role: user.role } : {}),
+        ...(user.role === "admin" ? { role: user.role } : {}),
         email: user.email,
         token: authTokenGenerator(user._id),
       });
     } else {
       res.status(401);
-      throw ApiError.unauthorized('Unauthorized');
+      throw ApiError.unauthorized("Unauthorized");
     }
   })
 );
@@ -92,10 +92,10 @@ userRouter.post(
 //GET PROFILE
 
 userRouter.get(
-  '/profile',
+  "/profile",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res) => {
-    const user = await User.findById(req.user._id).populate('todos');
+    const user = await User.findById(req.user._id).populate("todos");
     res.status(404);
     if (!user) throw ApiError.notFound(`You don't have any profile yet`);
     res.status(201);
@@ -106,7 +106,7 @@ userRouter.get(
 //UPDATE PROFILE
 
 userRouter.put(
-  '/profile/update',
+  "/profile/update",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res) => {
     const user = await User.findById(req.user._id);
@@ -127,7 +127,7 @@ userRouter.put(
       });
     } else {
       res.status(401);
-      throw ApiError.notFound('User Not found');
+      throw ApiError.notFound("User Not found");
     }
   })
 );
@@ -135,14 +135,14 @@ userRouter.put(
 //Fetch all Users
 
 userRouter.get(
-  '/',
+  "/",
   asyncHandler(async (req: IUserAuthInfoRequest, res) => {
-    if (req.user.role !== 'admin') {
-      const users = await User.find().populate('todos');
+    if (req.user.role !== "admin") {
+      const users = await User.find().populate("todos");
       res.status(200);
       res.json(users);
     } else {
-      throw ApiError.unauthorized('You are not authorized to view this page');
+      throw ApiError.unauthorized("You are not authorized to view this page");
     }
   })
 );
