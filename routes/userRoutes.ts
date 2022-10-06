@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import {
   authMiddleware,
@@ -14,9 +14,12 @@ const userRouter = express.Router();
 //Create user
 userRouter.post(
   "/",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const session = await User.startSession();
-    session.startTransaction();
+    session.startTransaction({
+      readConcern: { level: "snapshot" },
+      writeConcern: { w: "majority" },
+    });
     const { name, email, password, role } = req.body;
     const userExist = await User.findOne({ email: email });
 
@@ -68,7 +71,7 @@ userRouter.post(
 
 userRouter.post(
   "/login",
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     //Compare password
@@ -94,7 +97,7 @@ userRouter.post(
 userRouter.get(
   "/profile",
   authMiddleware,
-  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
     const user = await User.findById(req.user._id).populate("todos");
     res.status(404);
     if (!user) throw ApiError.notFound(`You don't have any profile yet`);
@@ -108,7 +111,7 @@ userRouter.get(
 userRouter.put(
   "/profile/update",
   authMiddleware,
-  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
     const user = await User.findById(req.user._id);
     if (user) {
       user.name = req.body.name || user.name;
@@ -136,7 +139,7 @@ userRouter.put(
 
 userRouter.get(
   "/",
-  asyncHandler(async (req: IUserAuthInfoRequest, res) => {
+  asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
     if (req.user.role !== "admin") {
       const users = await User.find().populate("todos");
       res.status(200);
