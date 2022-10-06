@@ -1,5 +1,8 @@
 node_modules
-.env
+.env*
 package-lock.json
 *.log
+.git
+.gitignore
+README.md
 backend

@@ -1,37 +1,37 @@
-version: '3.4'
+version: "3.4"
 
 services:
-  todokeepingapp:
-    image: todokeepingapp
+  todo-app:
+    container_name: todo-app
     build: .
     volumes:
+      - .env.docker:/app/.env
       - .:/usr/src/app
-    environment:
-      NODE_ENV: production
     ports:
-      - 5555:5555
-  mongodb:
+      - 5555:5000
+    depends_on:
+      - todo-mongodb
+
+  todo-mongodb:
     image: mongo:latest
-    container_name: mongodb-todo
+    container_name: todo-mongodb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootuser
-      - MONGO_INITDB_ROOT_PASSWORD=rootpass
-  mongo-express:
+
+  todo-mongo-express:
     image: mongo-express
-    container_name: mongo-express-todo
+    container_name: todo-mongo-express
     restart: always
     ports:
       - "8081:8081"
     volumes:
       - .:/usr/src/app/backend
     environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
-      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_SERVER=todo-mongodb
+    depends_on:
+      - todo-mongodb
 
 volumes:
   data:
