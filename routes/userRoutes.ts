@@ -124,7 +124,6 @@ userRouter.put(
       res.json({
         _id: updateUser._id,
         name: updateUser.name,
-        password: updateUser.password,
         email: updateUser.email,
         token: authTokenGenerator(updateUser._id),
       });
