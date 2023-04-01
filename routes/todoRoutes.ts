@@ -60,7 +60,13 @@ todoRouter.get(
   authMiddleware,
   asyncHandler(
     async (req: IUserAuthInfoRequest, res: Response): Promise<any> => {
-      let todos = await Todo.find({ createdBy: req.user._id })
+      const keyword = (req.query.keyword as string) || "";
+      const category_id = (req.query.category_id as string) || "";
+      let todos = await Todo.find({
+        createdBy: req.user._id,
+        title: { $regex: ".*" + keyword + ".*" },
+        ...(category_id ? { category: category_id } : {}),
+      })
         .sort("createdAt")
         .populate("category");
       if (!_.isEmpty(todos)) {
