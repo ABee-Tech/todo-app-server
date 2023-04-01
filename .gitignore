@@ -7,3 +7,5 @@ package-lock.json
 README.md
 backend
 uploads
+
+.DS_Store
