@@ -11,6 +11,7 @@ export interface IUserAuthInfoRequest extends Request {
     email?: string;
     password?: string;
     role?: string;
+    profile_picture?: any;
   };
   user_id?: string;
 }

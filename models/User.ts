@@ -7,6 +7,7 @@ interface IUser {
   email: string;
   role: string;
   password: string;
+  profile_picture: string;
 }
 
 interface IUserDocument extends IUser, Document {
@@ -28,19 +29,26 @@ const UserSchema = new mongoose.Schema<IUserDocument>({
   },
   password: {
     type: String,
+    select: false,
+  },
+  profile_picture: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Image",
+    required: false,
   },
 });
 
-//Popuplating this field of todos to users
+// Populating this field of todos to users
 UserSchema.virtual("todos", {
   ref: "Todo",
   foreignField: "createdBy",
   localField: "_id",
 });
+
 UserSchema.set("toJSON", { virtuals: true });
 //=== END=======
 
-//hashpassword
+// hash password
 UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
   //We only want to do this if the password is sent or modified, this is because when a user later update their password this will run and the user cannot login
   if (!this.isModified("password")) {
@@ -51,8 +59,8 @@ UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
   next();
 });
 
-//Verify password for login
-//Methods: Apply to an instance of this model
+// Verify password for login
+// Methods: Apply to an instance of this model
 UserSchema.methods.isPasswordMatch = async function (
   enteredPassword: string
 ): Promise<boolean> {

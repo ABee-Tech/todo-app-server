@@ -8,6 +8,10 @@ import User from "../models/User";
 import authTokenGenerator from "../utils/authTokenGenerator";
 import { ApiError } from "../handlers/buildError";
 import TodoCategory from "../models/TodoCategory";
+import { upload } from "../middlewares/upload";
+import sharp from "sharp";
+import fs from "fs";
+import Image from "../models/Image";
 
 const userRouter = express.Router();
 
@@ -21,7 +25,9 @@ userRouter.post(
       writeConcern: { w: "majority" },
     });
     const { name, email, password, role } = req.body;
-    const userExist = await User.findOne({ email: email });
+    const userExist = await User.findOne({ email: email }).populate(
+      "profile_picture"
+    );
 
     if (userExist) {
       await session.abortTransaction();
@@ -73,7 +79,9 @@ userRouter.post(
   "/login",
   asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email })
+      .select("password")
+      .populate("profile_picture");
     //Compare password
     if (user && (await user.isPasswordMatch(password))) {
       res.status(201);
@@ -81,6 +89,7 @@ userRouter.post(
       res.json({
         _id: user._id,
         name: user.name,
+        profile_picture: user.profile_picture,
         ...(user.role === "admin" ? { role: user.role } : {}),
         email: user.email,
         token: authTokenGenerator(user._id),
@@ -98,7 +107,9 @@ userRouter.get(
   "/profile",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
-    const user = await User.findById(req.user._id).populate("todos");
+    const user = await User.findById(req.user._id)
+      .populate("todos")
+      .populate("profile_picture");
     res.status(404);
     if (!user) throw ApiError.notFound(`You don't have any profile yet`);
     res.status(201);
@@ -134,13 +145,58 @@ userRouter.put(
   })
 );
 
+//UPDATE PROFILE PICTURE
+
+userRouter.put(
+  "/profile/picture",
+  authMiddleware,
+  upload.single("upload"),
+  asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
+    const imageData = {
+      name: req.file.filename,
+      desc: req.file.destination,
+      img: {
+        imageUrl: req.file.path,
+        contentType: req.file.mimetype,
+      },
+    };
+
+    const session = await Image.startSession();
+    session.startTransaction({
+      readConcern: { level: "snapshot" },
+      writeConcern: { w: "majority" },
+    });
+    const image = await Image.create([imageData], { session });
+
+    const user = await User.findById(req.user._id);
+    if (user) {
+      await User.findOneAndUpdate(
+        { _id: req.user._id },
+        { profile_picture: image[0]._id },
+        { session }
+      );
+    } else {
+      throw ApiError.notFound("User not found");
+    }
+    await session.commitTransaction();
+    session.endSession();
+    const populatedUser = await User.findById(req.user._id).populate(
+      "profile_picture"
+    );
+    res.status(200);
+    res.json(populatedUser);
+  })
+);
+
 //Fetch all Users
 
 userRouter.get(
   "/",
   asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
     if (req.user.role !== "admin") {
-      const users = await User.find().populate("todos");
+      const users = await User.find()
+        .populate("todos")
+        .populate("profile_picture");
       res.status(200);
       res.json(users);
     } else {

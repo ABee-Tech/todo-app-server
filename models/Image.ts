@@ -5,20 +5,28 @@ interface IImage {
   name: string;
   desc: string;
   img: {
-    data: Buffer;
+    imageUrl: string;
     contentType: string;
   };
 }
 
-const imageSchema = new mongoose.Schema<IImage>({
+const ImageSchema = new mongoose.Schema<IImage>({
   name: String,
   desc: String,
   img: {
-    data: Buffer,
+    imageUrl: String,
     contentType: String,
   },
 });
 
-const Image = mongoose.model<IImage>("Image", imageSchema);
+// Populating this field of image to users
+ImageSchema.virtual("profile_picture", {
+  ref: "User",
+  foreignField: "profile_picture",
+  localField: "_id",
+});
+ImageSchema.set("toJSON", { virtuals: true });
+
+const Image = mongoose.model<IImage>("Image", ImageSchema);
 
 export default Image;
