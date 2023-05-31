@@ -9,8 +9,6 @@ import authTokenGenerator from "../utils/authTokenGenerator";
 import { ApiError } from "../handlers/buildError";
 import TodoCategory from "../models/TodoCategory";
 import { upload } from "../middlewares/upload";
-import sharp from "sharp";
-import fs from "fs";
 import Image from "../models/Image";
 
 const userRouter = express.Router();
@@ -79,9 +77,9 @@ userRouter.post(
   "/login",
   asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email })
-      .select("password")
-      .populate("profile_picture");
+    const user = await User.findOne({ email: email }, ["+password"]).populate(
+      "profile_picture"
+    );
     //Compare password
     if (user && (await user.isPasswordMatch(password))) {
       res.status(201);
@@ -123,7 +121,7 @@ userRouter.put(
   "/profile/update",
   authMiddleware,
   asyncHandler(async (req: IUserAuthInfoRequest, res: Response) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).populate("profile_picture");
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
@@ -134,6 +132,7 @@ userRouter.put(
       const updateUser = await user.save();
       res.json({
         _id: updateUser._id,
+        profile_picture: updateUser.profile_picture,
         name: updateUser.name,
         email: updateUser.email,
         token: authTokenGenerator(updateUser._id),
