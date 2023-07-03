@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import User from "../models/User";
 import { ApiError } from "../handlers/buildError";
 
@@ -35,6 +35,10 @@ export const authMiddleware = asyncHandler(
           throw new ApiError(401, "Not authorised, token is fake");
         }
       } catch (error) {
+        if (error instanceof TokenExpiredError) {
+          res.status(401);
+          throw new ApiError(401, "The token has been expired");
+        }
         res.status(401);
         throw new ApiError(401, "Not authorised, token is fake");
       }
