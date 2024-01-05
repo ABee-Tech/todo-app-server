@@ -46,7 +46,7 @@ Full tech stack [here](/techstack.md)
 # Tech Stack File
 ![](https://img.stackshare.io/repo.svg "repo") [ABee-Tech/todo-app-server](https://github.com/ABee-Tech/todo-app-server)![](https://img.stackshare.io/public_badge.svg "public")
 <br/><br/>
-|32<br/>Tools used|12/22/23 <br/>Report generated|
+|33<br/>Tools used|01/05/24 <br/>Report generated|
 |------|------|
 </div>
 
@@ -212,9 +212,9 @@ Full tech stack [here](/techstack.md)
 </table>
 
 
-## <img src='https://img.stackshare.io/group.svg' /> Open source packages (15)</h2>
+## <img src='https://img.stackshare.io/group.svg' /> Open source packages (16)</h2>
 
-## <img width='24' height='24' src='https://img.stackshare.io/service/1120/lejvzrnlpb308aftn31u.png'/> npm (15)
+## <img width='24' height='24' src='https://img.stackshare.io/service/1120/lejvzrnlpb308aftn31u.png'/> npm (16)
 
 |NAME|VERSION|LAST UPDATED|LAST UPDATED BY|LICENSE|VULNERABILITIES|
 |:------|:------|:------|:------|:------|:------|
@@ -233,6 +233,7 @@ Full tech stack [here](/techstack.md)
 |[multer](https://www.npmjs.com/multer)|v1.4.4|07/22/22|Abhishek Raj Pandey |MIT|N/A|
 |[sharp](https://www.npmjs.com/sharp)|v0.31.3|04/01/23|Abhishek Raj Pandey |Apache-2.0|[](https://github.com/advisories/GHSA-54xq-cgqr-rpm3) (High)|
 |[ts-node](https://www.npmjs.com/ts-node)|v10.5.0|02/25/22|ABee Tech |MIT|N/A|
+|[winston](https://www.npmjs.com/winston)|v3.4.0|01/23/22|Abhishek Raj Pandey |MIT|N/A|
 
 <br/>
 <div align='center'>
