@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:20
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY ["package.json", "yarn.lock*", "npm-shrinkwrap.json*", "./"]
